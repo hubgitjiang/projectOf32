@@ -18,7 +18,7 @@ export default new Router({
       path: '/useElement',
       name: 'useElement',
       component: UseElement
-    },
+    }, // this.$router.push('/userELement')   this.$router.push({ name: 'userElement' })
     // 添加一个 login 路由
     {
       path: '/login',

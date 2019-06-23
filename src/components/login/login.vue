@@ -54,7 +54,7 @@ export default {
           // 发送请求：axios
           this.$http({
             method: 'POST',
-            url: 'http://localhost:8888/api/private/v1/login',
+            url: 'login',
             data: this.userObj
           }).then(res => {
             // 解构
