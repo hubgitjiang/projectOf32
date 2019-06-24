@@ -31,16 +31,16 @@ export default {
   },
   // 当 vue 加载完成后执行
   mounted () {
-    // 判断是否存在 token
-    // 获取 token
-    let token = window.localStorage.getItem('token')
-    // 判断
-    if (!token) {
-      // 提示
-      this.$message.error('您还没有登录，请先登录')
-      // 没有登录，跳转到登录页面
-      this.$router.push({ name: 'login' })
-    }
+    // // 判断是否存在 token
+    // // 获取 token
+    // let token = window.localStorage.getItem('token')
+    // // 判断
+    // if (!token) {
+    //   // 提示
+    //   this.$message.error('您还没有登录，请先登录')
+    //   // 没有登录，跳转到登录页面
+    //   this.$router.push({ name: 'login' })
+    // }
   }
 }
 </script>
@@ -74,6 +74,7 @@ export default {
     line-height: 200px;
     height: 100%;
 }
+
 .mymenu {
     height: 100%;
 }

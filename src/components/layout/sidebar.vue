@@ -25,11 +25,11 @@
                 <span>权限管理</span>
             </template>
             <!-- 菜单选项下的子选项目：二级菜单 -->
-            <el-menu-item index="2-1">
+            <el-menu-item index="/roles">
                 <i class="el-icon-menu"></i>
                 角色列表
             </el-menu-item>
-            <el-menu-item index="2-2">
+            <el-menu-item index="/rights">
                 <i class="el-icon-menu"></i>
                 权限列表
             </el-menu-item>

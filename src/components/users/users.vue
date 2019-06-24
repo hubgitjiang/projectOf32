@@ -2,11 +2,8 @@
     <!-- 卡片 -->
     <el-card>
         <!-- 面包屑导航 -->
-        <el-breadcrumb separator-class="el-icon-arrow-right">
-            <el-breadcrumb-item :to="{ path: '/' }">首页</el-breadcrumb-item>
-            <el-breadcrumb-item>用户管理</el-breadcrumb-item>
-            <el-breadcrumb-item>用户列表</el-breadcrumb-item>
-        </el-breadcrumb>
+        <!-- 父传 -->
+        <mybread one="用户管理" two="用户列表" />
         <!-- 搜索框 -->
         <el-row class="myrow">
             <el-col :span="6">
@@ -116,295 +113,300 @@
 </template>
 
 <script>
+// 导入面包屑导航
+import mybread from '../layout/mybread.vue'
+
 export default {
-    data() {
-        return {
-            tableData: [],
-            // 查询的关键字
-            query: '',
-            // 当前页
-            pagenum: 1,
-            // 页容量
-            pagesize: 5,
-            // 容量选项
-            pagesizes: [5, 10, 15],
-            // 总条数
-            total: 0,
-            // 控制新增对话框的显示和隐藏
-            adddialog: false,
-            // 控制修改对话框的显示和隐藏
-            upddialog: false,
-            // 控制分配角色对话框的显示和隐藏
-            roledialog: false,
-            // 设置表头的宽度
-            formLabelWidth: '80px',
-            addUser: {
-                username: '',
-                password: '',
-                email: '',
-                mobile: ''
-            },
-            // 修改的数据
-            updUser: {
-                id: '',
-                username: '',
-                email: '',
-                mobile: ''
-            },
-            // 分配角色时的对象
-            setRoleObj: {
-                username: '',
-                id: '',
-                rid: '', // 角色 id
-            },
-            // 下拉框中的数据源
-            selDataList: []
-        }
-    },
-    methods: {
-        // 获取所有的数据
-        getTableData() {
-            // 请求的后端的服务器，每个接口都需要在请求头中添加 token
-            this.$http({
-                method: 'GET',
-                url: `users?query=${this.query}&pagenum=${this.pagenum}&pagesize=${this.pagesize}`
-            }).then(res => {
-                // 解构
-                let { meta, data } = res.data
-                // 判断
-                if (meta.status === 200) {
-                    // 判断 data中的 users 的长度是否为 0, 如果为 0，页数减1，并且重新获取数据
-                    if (data.users.length === 0 && this.pagenum !== 1) {
-                        this.pagenum--
-                        this.getTableData()
-                        // 结束后续的操作
-                        return
-                    }
-                    // 得到数据源
-                    this.tableData = data.users
-                    // 得到总条数
-                    this.total = data.total
-                }
-            })
-        },
-        // 当当前页改变时触发
-        currChange(currentPage) {
-            // 当当前页改变时，改变 pagenum
-            this.pagenum = currentPage
-            // 重新获取数据
-            this.getTableData()
-        },
-        // 页容量改变时执行
-        sizeChange(pagesize) {
-            // 重新给 pagesize 赋值
-            this.pagesize = pagesize
-            // 重新获取数据
-            this.getTableData()
-        },
-        // 当点击搜索框时执行
-        search() {
-            // 调用 getTabelData 方法就可以了
-            this.getTableData()
-        },
-        // 打开新增面板
-        openAddDialog() {
-            this.adddialog = true
-        },
-        // 新增中的取消
-        addCancle() {
-            this.adddialog = false
-        },
-        // 将数据提交到服务器
-        addUserFn() {
-            // 将参数提交到服务器
-            this.$http({
-                method: 'POST',
-                url: 'users',
-                data: this.addUser
-            }).then(res => {
-                // 判断
-                if (res.data.meta.status === 201) {
-                    this.$message({
-                        message: res.data.meta.msg,
-                        type: 'success'
-                    })
-                    // 更新数据
-                    this.getTableData()
-                } else {
-                    this.$message.error(res.data.meta.msg)
-                }
-                // 清空新增面板
-                this.addUser.username = ''
-                this.addUser.password = ''
-                this.addUser.email = ''
-                this.addUser.mobile = ''
-                // 关闭面板
-                this.adddialog = false
-            })
-        },
-        // 删除方法
-        del(id) {
-            this.$confirm('此操作将永久删除该文件, 是否继续?', '提示', {
-                confirmButtonText: '确定',
-                cancelButtonText: '取消',
-                type: 'warning'
-            }).then(() => {
-                // 通过 axios 发送请求
-                this.$http({
-                    method: 'DELETE',
-                    url: `users/${id}`,
-                    // 添加 token
-                    headers: {
-                        Authorization: window.localStorage.getItem('token')
-                    }
-                }).then(res => {
-                    let { meta } = res.data
-                    // 判断
-                    if (meta.status === 200) {
-                        this.$message({
-                            message: meta.msg,
-                            type: 'success'
-                        })
-                        // 更新数据
-                        this.getTableData()
-                    } else {
-                        this.$message.error(meta.msg)
-                    }
-                })
-            })
-        },
-        // 打开修改面板：
-        update(id) {
-            // 根据 id 得到数据
-            this.$http({
-                method: 'GET',
-                url: `users/${id}`
-            }).then(res => {
-                // 解构 
-                let { data, meta } = res.data
-                // 判断
-                if (meta.status === 200) {
-                    // 将数据保存起来
-                    this.updUser.id = data.id
-                    this.updUser.username = data.username
-                    this.updUser.mobile = data.mobile
-                    this.updUser.email = data.email
-                    // 显示修改对话框
-                    this.upddialog = true
-                } else {
-                    this.$message.error(meta.msg)
-                }
-            })
-        },
-        // 提交修改数据
-        updUsersFn() {
-            this.$http({
-                method: 'PUT',
-                url: `users/${this.updUser.id}`,
-                data: {
-                    mobile: this.updUser.mobile,
-                    email: this.updUser.email
-                }
-            }).then(res => {
-                // 将 meta 解析出来
-                let { meta } = res.data
-                // 判断
-                if (meta.status === 200) {
-                    this.$message({
-                        message: meta.msg,
-                        type: 'success'
-                    })
-                    // 更新数据
-                    this.getTableData()
-                } else {
-                    this.$message.error(meta.msg)
-                }
-                // 关闭修改面板
-                this.upddialog = false
-            })
-        },
-        // 打开分配角色面板
-        roles(id) {
-            this.$http({
-                method: 'GET',
-                url: `users/${id}`
-            }).then(res => {
-                // 解构 
-                let { data, meta } = res.data
-                // 判断
-                if (meta.status === 200) {
-                    // 将数据保存起来
-                    this.setRoleObj.username = data.username
-                    this.setRoleObj.id = data.id
-                    this.setRoleObj.rid = data.rid
-
-                    // 获取下拉框中的数据
-                    this.$http({
-                        method: 'GET',
-                        url: 'roles',
-                        headers: {
-                            Authorization: window.localStorage.getItem('token')
-                        }
-                    }).then(res => {
-                        let { data, meta } = res.data
-                        // 判断
-                        if (meta.status === 200) {
-                            // 给下拉框的数据源赋值
-                            this.selDataList = data
-                        }
-                    })
-
-
-                    this.roledialog = true
-                } else {
-                    this.$message.error(meta.msg)
-                }
-            })
-        },
-        // 设置用户角色
-        setRuleFn() {
-            this.$http({
-                method: 'PUT',
-                url: `users/${this.setRoleObj.id}/role`,
-                data: {
-                    rid: this.setRoleObj.rid
-                }
-            }).then(res => {
-                let { meta } = res.data
-                if (meta.status === 200) {
-                    this.$message({
-                        message: meta.msg,
-                        type: 'success'
-                    })
-                } else {
-                    this.$message.error(meta.msg)
-                }
-                // 关闭面板
-                this.roledialog = false
-            })
-        },
-        // 开关按钮的 change 事件
-        selChange(uid, type) {
-            // 发送 axios 请求
-            this.$http({
-                method: 'PUT',
-                url: `users/${uid}/state/${type}`
-            }).then(res => {
-                let { meta } = res.data
-                if (meta.status === 200) {
-                    this.$message({
-                        message: meta.msg,
-                        type: 'success'
-                    })
-                } else {
-                    this.$message.error(meta.msg)
-                }
-            })
-        }
-    },
-    mounted() {
-        this.getTableData()
+  data () {
+    return {
+      tableData: [],
+      // 查询的关键字
+      query: '',
+      // 当前页
+      pagenum: 1,
+      // 页容量
+      pagesize: 5,
+      // 容量选项
+      pagesizes: [5, 10, 15],
+      // 总条数
+      total: 0,
+      // 控制新增对话框的显示和隐藏
+      adddialog: false,
+      // 控制修改对话框的显示和隐藏
+      upddialog: false,
+      // 控制分配角色对话框的显示和隐藏
+      roledialog: false,
+      // 设置表头的宽度
+      formLabelWidth: '80px',
+      addUser: {
+        username: '',
+        password: '',
+        email: '',
+        mobile: ''
+      },
+      // 修改的数据
+      updUser: {
+        id: '',
+        username: '',
+        email: '',
+        mobile: ''
+      },
+      // 分配角色时的对象
+      setRoleObj: {
+        username: '',
+        id: '',
+        rid: '' // 角色 id
+      },
+      // 下拉框中的数据源
+      selDataList: []
     }
+  },
+  methods: {
+    // 获取所有的数据
+    getTableData () {
+      // 请求的后端的服务器，每个接口都需要在请求头中添加 token
+      this.$http({
+        method: 'GET',
+        url: `users?query=${this.query}&pagenum=${this.pagenum}&pagesize=${this.pagesize}`
+      }).then(res => {
+        // 解构
+        let { meta, data } = res.data
+        // 判断
+        if (meta.status === 200) {
+          // 判断 data中的 users 的长度是否为 0, 如果为 0，页数减1，并且重新获取数据
+          if (data.users.length === 0 && this.pagenum !== 1) {
+            this.pagenum--
+            this.getTableData()
+            // 结束后续的操作
+            return
+          }
+          // 得到数据源
+          this.tableData = data.users
+          // 得到总条数
+          this.total = data.total
+        }
+      })
+    },
+    // 当当前页改变时触发
+    currChange (currentPage) {
+      // 当当前页改变时，改变 pagenum
+      this.pagenum = currentPage
+      // 重新获取数据
+      this.getTableData()
+    },
+    // 页容量改变时执行
+    sizeChange (pagesize) {
+      // 重新给 pagesize 赋值
+      this.pagesize = pagesize
+      // 重新获取数据
+      this.getTableData()
+    },
+    // 当点击搜索框时执行
+    search () {
+      // 调用 getTabelData 方法就可以了
+      this.getTableData()
+    },
+    // 打开新增面板
+    openAddDialog () {
+      this.adddialog = true
+    },
+    // 新增中的取消
+    addCancle () {
+      this.adddialog = false
+    },
+    // 将数据提交到服务器
+    addUserFn () {
+      // 将参数提交到服务器
+      this.$http({
+        method: 'POST',
+        url: 'users',
+        data: this.addUser
+      }).then(res => {
+        // 判断
+        if (res.data.meta.status === 201) {
+          this.$message({
+            message: res.data.meta.msg,
+            type: 'success'
+          })
+          // 更新数据
+          this.getTableData()
+        } else {
+          this.$message.error(res.data.meta.msg)
+        }
+        // 清空新增面板
+        this.addUser.username = ''
+        this.addUser.password = ''
+        this.addUser.email = ''
+        this.addUser.mobile = ''
+        // 关闭面板
+        this.adddialog = false
+      })
+    },
+    // 删除方法
+    del (id) {
+      this.$confirm('此操作将永久删除该文件, 是否继续?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        // 通过 axios 发送请求
+        this.$http({
+          method: 'DELETE',
+          url: `users/${id}`,
+          // 添加 token
+          headers: {
+            Authorization: window.localStorage.getItem('token')
+          }
+        }).then(res => {
+          let { meta } = res.data
+          // 判断
+          if (meta.status === 200) {
+            this.$message({
+              message: meta.msg,
+              type: 'success'
+            })
+            // 更新数据
+            this.getTableData()
+          } else {
+            this.$message.error(meta.msg)
+          }
+        })
+      })
+    },
+    // 打开修改面板：
+    update (id) {
+      // 根据 id 得到数据
+      this.$http({
+        method: 'GET',
+        url: `users/${id}`
+      }).then(res => {
+        // 解构
+        let { data, meta } = res.data
+        // 判断
+        if (meta.status === 200) {
+          // 将数据保存起来
+          this.updUser.id = data.id
+          this.updUser.username = data.username
+          this.updUser.mobile = data.mobile
+          this.updUser.email = data.email
+          // 显示修改对话框
+          this.upddialog = true
+        } else {
+          this.$message.error(meta.msg)
+        }
+      })
+    },
+    // 提交修改数据
+    updUsersFn () {
+      this.$http({
+        method: 'PUT',
+        url: `users/${this.updUser.id}`,
+        data: {
+          mobile: this.updUser.mobile,
+          email: this.updUser.email
+        }
+      }).then(res => {
+        // 将 meta 解析出来
+        let { meta } = res.data
+        // 判断
+        if (meta.status === 200) {
+          this.$message({
+            message: meta.msg,
+            type: 'success'
+          })
+          // 更新数据
+          this.getTableData()
+        } else {
+          this.$message.error(meta.msg)
+        }
+        // 关闭修改面板
+        this.upddialog = false
+      })
+    },
+    // 打开分配角色面板
+    roles (id) {
+      this.$http({
+        method: 'GET',
+        url: `users/${id}`
+      }).then(res => {
+        // 解构
+        let { data, meta } = res.data
+        // 判断
+        if (meta.status === 200) {
+          // 将数据保存起来
+          this.setRoleObj.username = data.username
+          this.setRoleObj.id = data.id
+          this.setRoleObj.rid = data.rid
+
+          // 获取下拉框中的数据
+          this.$http({
+            method: 'GET',
+            url: 'roles',
+            headers: {
+              Authorization: window.localStorage.getItem('token')
+            }
+          }).then(res => {
+            let { data, meta } = res.data
+            // 判断
+            if (meta.status === 200) {
+              // 给下拉框的数据源赋值
+              this.selDataList = data
+            }
+          })
+
+          this.roledialog = true
+        } else {
+          this.$message.error(meta.msg)
+        }
+      })
+    },
+    // 设置用户角色
+    setRuleFn () {
+      this.$http({
+        method: 'PUT',
+        url: `users/${this.setRoleObj.id}/role`,
+        data: {
+          rid: this.setRoleObj.rid
+        }
+      }).then(res => {
+        let { meta } = res.data
+        if (meta.status === 200) {
+          this.$message({
+            message: meta.msg,
+            type: 'success'
+          })
+        } else {
+          this.$message.error(meta.msg)
+        }
+        // 关闭面板
+        this.roledialog = false
+      })
+    },
+    // 开关按钮的 change 事件
+    selChange (uid, type) {
+      // 发送 axios 请求
+      this.$http({
+        method: 'PUT',
+        url: `users/${uid}/state/${type}`
+      }).then(res => {
+        let { meta } = res.data
+        if (meta.status === 200) {
+          this.$message({
+            message: meta.msg,
+            type: 'success'
+          })
+        } else {
+          this.$message.error(meta.msg)
+        }
+      })
+    }
+  },
+  mounted () {
+    this.getTableData()
+  },
+  components: {
+    mybread: mybread
+  }
 }
 </script>
 

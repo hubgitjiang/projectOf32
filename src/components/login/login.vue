@@ -61,10 +61,10 @@ export default {
             let { data, meta } = res.data
             // 判断
             if (meta.status === 200) {
-              // 登录成功，跳转到首页
-              this.$router.push('/')
               // 将 token 保存起来
               window.localStorage.setItem('token', data.token)
+              // 登录成功，跳转到首页
+              this.$router.push('/') // 会触发导航守卫
               // 提示成功
               this.$message({
                 type: 'success',
