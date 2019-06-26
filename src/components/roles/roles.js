@@ -14,7 +14,9 @@ export default {
                 children: 'children'
             },
             // 设置默认选中
-            defaultChecked: []
+            defaultChecked: [],
+            // 设置权限的角色 id
+            setRoleId: 0
         }
     },
     components: {
@@ -51,20 +53,22 @@ export default {
                     })
                     // 已经返回了新的权限 在data中
                     // 根据 roleId 得到当前要修改的数据源
-                    for (var i = 0; i < this.tableData.length; i++) {
-                        // 找到当前修改权限的角色
-                        if (this.tableData[i].id === roleId) {
-                            this.tableData[i].son = data
-                        }
-                    }
-                    // scope.row.children = data
+                    // for (var i = 0; i < this.tableData.length; i++) {
+                    //     // 找到当前修改权限的角色
+                    //     if (this.tableData[i].id === roleId) {
+                    //         this.tableData[i].son = data
+                    //     }
+                    // }
+                    scope.row.children = data
                 } else {
                     this.$message.error(meta.msg)
                 }
             })
         },
         // 打开分配权限面板
-        openRole(rightsData) {
+        openRole(rightsData, id) {
+            // 将当前角色的 id 保存起来
+            this.setRoleId = id
             this.defaultChecked = []
             // 获取所有的权限数据
             this.$http({
@@ -92,6 +96,41 @@ export default {
                     this.$message.error(meta.msg)
                 }
             })
+        },
+        // 设置权限
+        setRightFn() {
+            // 获取更新后权限
+            // getCheckedKeys: 
+            //      特点：只会得到全选的 id，不会得到半选
+            // getHalfCheckedKeys
+            //      特点：只能得到半选的 id
+            let idsAll = this.$refs.mytree.getCheckedKeys()
+            let idsHarf = this.$refs.mytree.getHalfCheckedKeys()
+            // 将全选与半选组合
+            let ids = [...idsAll, ...idsHarf]
+            // 将 ids 转为字符串
+            ids = ids.join(',')
+            // 提交到服务器
+            this.$http({
+                method: 'POST',
+                url: `roles/${this.setRoleId}/rights`,
+                data: {
+                    rids: ids
+                }
+            }).then(res => {
+                let { meta } = res.data
+                if (meta.status === 200) {
+                    this.$message({
+                        message: meta.msg,
+                        type: 'success'
+                    })
+                    // 重新获取数据
+                    this.getRolesList()
+                } else {
+                    this.$message.error(meta.msg)
+                }
+            })
+            this.roleDialog = false
         }
     },
     mounted() {

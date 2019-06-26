@@ -47,7 +47,7 @@
             <template slot-scope="scope">
                 <el-button type="primary" icon="el-icon-edit" plain size="mini"></el-button>
                 <el-button type="danger" icon="el-icon-delete" plain size="mini"></el-button>
-                <el-button @click="openRole(scope.row.children)" type="success" icon="el-icon-check" plain size="mini"></el-button>
+                <el-button @click="openRole(scope.row.children, scope.row.id)" type="success" icon="el-icon-check" plain size="mini"></el-button>
             </template>
         </el-table-column>
     </el-table>
@@ -58,10 +58,10 @@
         <!-- props：当前组个的配置信息 -->
         <!-- node-key: 设置唯一标识 -->
         <!-- default-checked-keys: 默认选中的数组 -->
-        <el-tree :default-checked-keys="defaultChecked" node-key="id" show-checkbox :data="rightsList" :default-expand-all="true" :props="defaultProps"></el-tree>
+        <el-tree ref="mytree" :default-checked-keys="defaultChecked" node-key="id" show-checkbox :data="rightsList" :default-expand-all="true" :props="defaultProps"></el-tree>
         <div slot="footer" class="dialog-footer">
             <el-button @click="dialogFormVisible = false">取 消</el-button>
-            <el-button type="primary" @click="dialogFormVisible = false">确 定</el-button>
+            <el-button type="primary" @click="setRightFn">确 定</el-button>
         </div>
     </el-dialog>
 </el-card>

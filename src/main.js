@@ -5,6 +5,9 @@ import App from './App'
 import router from './router'
 // 引入 element-ui
 import Element from 'Element-ui'
+// 引入 element 的插件
+import ElTreeGrid from 'element-tree-grid'
+
 import 'element-ui/lib/theme-chalk/index.css'
 // 引入 myaxios
 import myaxios from '@/assets/js/myaxios.js'
@@ -16,6 +19,9 @@ import '@/assets/css/index.css'
 Vue.use(Element)
 // 使用 myaxios 插件
 Vue.use(myaxios)
+
+// 将插件注册为全局组件
+Vue.component(ElTreeGrid.name, ElTreeGrid)
 
 Vue.config.productionTip = false
 

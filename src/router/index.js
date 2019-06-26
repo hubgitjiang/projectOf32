@@ -1,12 +1,17 @@
 import Vue from 'vue'
 import Router from 'vue-router'
+// 单独引入 message
+import { Message } from 'element-ui'
+
 // 引入路由对应的组件
 import Login from '@/components/login/login.vue'
 import UseElement from '@/components/useElement/useElement.vue'
+import userTreeGrid from '@/components/useElement/userTreeGrid.vue'
 import Home from '@/components/home/home.vue'
 import Users from '@/components/users/users.vue'
 import Rights from '@/components/rights/rights.vue'
 import Roles from '@/components/roles/roles.vue'
+import Categories from '@/components/categories/categories.vue'
 
 Vue.use(Router)
 
@@ -21,6 +26,10 @@ let router = new Router({
       name: 'useElement',
       component: UseElement
     }, // this.$router.push('/userELement')   this.$router.push({ name: 'userElement' })
+    {
+      path: '/userTreeGrid',
+      component: userTreeGrid
+    },
     // 添加一个 login 路由
     {
       path: '/login',
@@ -35,7 +44,8 @@ let router = new Router({
       children: [
         { path: '/users', component: Users }, // 用户列表路由
         { path: '/rights', component: Rights }, // 权限列表
-        { path: '/roles', component: Roles } // 角色列表
+        { path: '/roles', component: Roles }, // 角色列表
+        { path: '/categories', component: Categories }, // 角色列表
       ]
     }
   ]
@@ -55,6 +65,9 @@ router.beforeEach(function (to, from, next) {
     // 判断: 是否存在  token （有一种情况是不需要判断 token  ，当请求 Login 时）
     if (!token) {
       // 跳转到 Login 路由
+      // 提示用户没有登录，将要跳转到登录页面
+      // this.$message.error('您还没有登录，请先登录')
+      Message.error('您还没有登录，请先登录')
       // this.$router.push('/login') // 这种写法是在 vue 组件中写的 this 指的是 vue 的实例
       router.push('/login')
     } else {
