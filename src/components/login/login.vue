@@ -83,7 +83,8 @@ export default {
 }
 </script>
 
-<style>
+<style scoped>
+/* 这里的样式只在当前文件中起作用 */
 .login {
   background-color: #324152;
   width: 100%;

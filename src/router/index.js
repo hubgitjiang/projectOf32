@@ -7,11 +7,14 @@ import { Message } from 'element-ui'
 import Login from '@/components/login/login.vue'
 import UseElement from '@/components/useElement/useElement.vue'
 import userTreeGrid from '@/components/useElement/userTreeGrid.vue'
+import usejl from '@/components/useElement/usejl.vue'
 import Home from '@/components/home/home.vue'
 import Users from '@/components/users/users.vue'
 import Rights from '@/components/rights/rights.vue'
 import Roles from '@/components/roles/roles.vue'
 import Categories from '@/components/categories/categories.vue'
+import Goods from '@/components/goods/goods.vue'
+import GoodsAdd from '@/components/goodsAdd/goodsAdd.vue'
 
 Vue.use(Router)
 
@@ -30,6 +33,10 @@ let router = new Router({
       path: '/userTreeGrid',
       component: userTreeGrid
     },
+    {
+      path: '/usejl',
+      component: usejl
+    },
     // 添加一个 login 路由
     {
       path: '/login',
@@ -46,6 +53,8 @@ let router = new Router({
         { path: '/rights', component: Rights }, // 权限列表
         { path: '/roles', component: Roles }, // 角色列表
         { path: '/categories', component: Categories }, // 角色列表
+        { path: '/goods', component: Goods }, // 商品列表
+        { path: '/goodsAdd', component: GoodsAdd } // 商品添加
       ]
     }
   ]

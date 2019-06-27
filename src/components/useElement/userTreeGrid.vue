@@ -17,23 +17,31 @@
 
 <script>
 export default {
-    data() {
-        return {
-            tableData: [
-                {
-                    id: 1, parentId: 0, level: 0, name: '家电', children: [
-                        {
-                            id: 3, parentId: 1, level: 1, name: '空调', children: [
-                                { id: 5, parentId: 3, level: 2, name: '格力' }
-                            ]
-                        },
-                        { id: 4, parentId: 1, level: 1, name: '洗衣机' }
-                    ]
-                },
-                { id: 2, parentId: 0, level: 0, name: '手机' }
-            ]
-        }
+  data () {
+    return {
+      tableData: [
+        {
+          id: 1,
+          parentId: 0,
+          level: 0,
+          name: '家电',
+          children: [
+            {
+              id: 3,
+              parentId: 1,
+              level: 1,
+              name: '空调',
+              children: [
+                { id: 5, parentId: 3, level: 2, name: '格力' }
+              ]
+            },
+            { id: 4, parentId: 1, level: 1, name: '洗衣机' }
+          ]
+        },
+        { id: 2, parentId: 0, level: 0, name: '手机' }
+      ]
     }
+  }
 }
 </script>
 

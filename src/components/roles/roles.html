@@ -18,7 +18,7 @@
                     </el-col>
                     <el-col :span="20">
                         <!-- 遍历二级权限 -->
-                        <el-row v-for="(item2, index2) in item1.children">
+                        <el-row v-for="(item2, index2) in item1.children" :key="index2">
                             <!-- 生成二级权限 -->
                             <el-col :span="5">
                                 <el-tag class="tag2" @close="delRigth(scope.row.id, item2.id, scope)" closable type="success">{{ item2.authName }} {{ item2.id }}</el-tag><i class="el-icon-arrow-right
