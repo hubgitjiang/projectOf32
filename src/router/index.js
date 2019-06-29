@@ -4,17 +4,19 @@ import Router from 'vue-router'
 import { Message } from 'element-ui'
 
 // 引入路由对应的组件
-import Login from '@/components/login/login.vue'
-import UseElement from '@/components/useElement/useElement.vue'
-import userTreeGrid from '@/components/useElement/userTreeGrid.vue'
-import usejl from '@/components/useElement/usejl.vue'
-import Home from '@/components/home/home.vue'
-import Users from '@/components/users/users.vue'
-import Rights from '@/components/rights/rights.vue'
-import Roles from '@/components/roles/roles.vue'
-import Categories from '@/components/categories/categories.vue'
-import Goods from '@/components/goods/goods.vue'
-import GoodsAdd from '@/components/goodsAdd/goodsAdd.vue'
+const Login = () => import('@/components/login/login.vue')
+const UseElement = () => import('@/components/useElement/useElement.vue')
+const userTreeGrid = () => import('@/components/useElement/userTreeGrid.vue')
+const usejl = () => import('@/components/useElement/usejl.vue')
+const Home = () => import('@/components/home/home.vue')
+const Users = () => import('@/components/users/users.vue')
+const Rights = () => import('@/components/rights/rights.vue')
+const Roles = () => import('@/components/roles/roles.vue')
+const Categories = () => import('@/components/categories/categories.vue')
+const Goods = () => import('@/components/goods/goods.vue')
+const GoodsAdd = () => import('@/components/goodsAdd/goodsAdd.vue')
+const orders = () => import('@/components/orders/orders.vue')
+const reports = () => import('@/components/reports/reports.vue')
 
 Vue.use(Router)
 
@@ -54,7 +56,9 @@ let router = new Router({
         { path: '/roles', component: Roles }, // 角色列表
         { path: '/categories', component: Categories }, // 角色列表
         { path: '/goods', component: Goods }, // 商品列表
-        { path: '/goodsAdd', component: GoodsAdd } // 商品添加
+        { path: '/goodsAdd', component: GoodsAdd }, // 商品添加
+        { path: '/orders', component: orders },
+        { path: '/reports', component: reports }
       ]
     }
   ]

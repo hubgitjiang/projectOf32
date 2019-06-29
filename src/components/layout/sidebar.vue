@@ -1,7 +1,8 @@
 <template>
     <!-- el-menu: 菜单栏 -->
     <el-menu :router="true" :unique-opened="true" class="mymenu el-menu-vertical-demo">
-        <el-submenu v-for="item in rightsList" :key="item.id" :index="item.path">
+        <el-submenu v-for="item in rightsList" :key="item.id" :index="'/' + item.path"> 
+            <!-- index="users" -->
             <!-- template：菜单选项的内容 -->
             <template slot="title">
                 <!-- 图标 -->
@@ -10,7 +11,7 @@
                 <span> {{ item.authName }} </span>
             </template>
             <!-- 菜单选项下的子选项目：二级菜单 -->
-            <el-menu-item v-for="son in item.children" :key="son.id" :index="son.path">
+            <el-menu-item v-for="son in item.children" :key="son.id" :index="'/' + son.path">
                 <i class="el-icon-menu"></i>
                 <span> {{ son.authName }} </span>
             </el-menu-item>

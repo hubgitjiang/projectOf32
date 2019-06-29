@@ -24,16 +24,16 @@
             <el-tab-pane label="基本信息" name="first">
                 <el-form label-position="top" ref="ruleForm" label-width="100px" class="demo-ruleForm">
                     <el-form-item label="商品名称" prop="name">
-                        <el-input></el-input>
+                        <el-input v-model="addObj.goods_name"></el-input>
                     </el-form-item>
                     <el-form-item label="商品价格" prop="name">
-                        <el-input></el-input>
+                        <el-input v-model="addObj.goods_price"></el-input>
                     </el-form-item>
                     <el-form-item label="商品重量" prop="name">
-                        <el-input></el-input>
+                        <el-input v-model="addObj.goods_weight"></el-input>
                     </el-form-item>
                     <el-form-item label="商品数量" prop="name">
-                        <el-input></el-input>
+                        <el-input v-model="addObj.goods_number"></el-input>
                     </el-form-item>
                     <el-form-item label="商品分类" prop="name">
                         {{ cateVal }}
@@ -72,7 +72,12 @@
                 </el-upload>
                 {{ fileList }}
             </el-tab-pane>
-            <el-tab-pane label="商品内容" name="fifth">商品内容</el-tab-pane>
+            <el-tab-pane label="商品内容" name="fifth">
+                <el-button type="primary" @click="addGoods">添加商品</el-button>
+                <!-- 富文本编辑框 -->
+                <quill-editor v-model="content" ref="myQuillEditor">
+                </quill-editor>
+            </el-tab-pane>
         </el-tabs>
         <!-- 预览图片的对话框 -->
         <el-dialog title="预览图片" :visible.sync="imgDialog">
@@ -118,7 +123,16 @@ export default {
             // 上传的图片集合
             fileList: [],
             // 预览图片框
-            imgDialog: false
+            imgDialog: false,
+            content: "我是富文本编辑框中的默认值",
+            // 新增对象
+            addObj: {
+                goods_name: '',
+                goods_cat: '',
+                goods_price: '',
+                goods_number: '',
+                goods_weight: ''
+            }
         }
     },
     components: {
@@ -208,6 +222,30 @@ export default {
             //     this.$refs.myimg.src = img
             //     console.log(this.$refs)
             // }, 1000)
+        },
+        // 添加商品
+        addGoods() {
+            // 得到数据： addObj
+            this.addObj.goods_cat = this.cateVal.join(',') // 将分类转换为字符串
+            // 请求接收
+            this.$http({
+                url: 'goods',
+                method: 'post',
+                data: {
+                    ...this.addObj, // 将新增对象中的属性展开
+                    goods_introduce: this.content
+                }
+            }).then(res => {
+                let { meta } = res.data
+                if (meta.status === 201) {
+                    // 提示新增成功
+                    this.$message.success(meta.msg)
+                    // 跳转到 goods 组件
+                    this.$router.push('/goods')
+                } else {
+                    this.$message.error(meta.msg)
+                }
+            })
         }
     },
     mounted() {
@@ -216,13 +254,15 @@ export default {
 }
 </script>
 
-<style scoped>
+<style>
+/* 只要当前组件中起使用 */
+
 .myalert {
     margin-top: 20px;
     margin-bottom: 20px;
 }
 
-.el-step__title.is-wait {
+.el-step__title {
     font-size: 12px;
 }
 
@@ -232,5 +272,9 @@ export default {
 
 label.el-checkbox.is-bordered.is-checked {
     margin-right: 0px;
+}
+
+.ql-editor {
+    height: 400px;
 }
 </style>
